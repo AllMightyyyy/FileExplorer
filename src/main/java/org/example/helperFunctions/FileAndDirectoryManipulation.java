@@ -43,7 +43,7 @@ public class FileAndDirectoryManipulation {
     }
 
     // Delete specified file
-    public boolean deleteFile(String filePath) {
+    public static boolean deleteFile(String filePath) {
         Path toDelete = Paths.get(filePath).toAbsolutePath();
         try {
             Files.delete(toDelete);
@@ -113,28 +113,14 @@ public class FileAndDirectoryManipulation {
     }
 
     // Function that copies a file from one location to another
-    private boolean copyFile(String sourcePath, String destinationPath) {
-        Path sourceFile = Paths.get(sourcePath).toAbsolutePath();
-        Path destinationFile = Paths.get(destinationPath).toAbsolutePath();
-
-        try {
-            Path parentDir = destinationFile.getParent();
-            if(parentDir != null && Files.notExists(parentDir)) {
-                Files.createDirectories(parentDir);
-            }
-            Files.copy(sourceFile, destinationFile, StandardCopyOption.REPLACE_EXISTING);
-            System.out.println("File copied successfully from " + sourceFile + " to " + destinationFile);
-            return true;
-        } catch (FileAlreadyExistsException e) {
-            System.out.println("File already exists at the destination path: " + destinationFile);
-            return false;
-        } catch (NoSuchFileException e) {
-            System.out.println("Source file not found: " + sourceFile);
-            return false;
-        } catch (IOException e) {
-            System.out.println("I/O error occurred while copying: " + e.getMessage());
-            return false;
+    public boolean copyFile(Path source, Path destination) throws IOException {
+        Path parentDir = destination.getParent();
+        if (parentDir != null && Files.notExists(parentDir)) {
+            Files.createDirectories(parentDir);
         }
+        Files.copy(source, destination, StandardCopyOption.REPLACE_EXISTING);
+        System.out.println("File copied successfully from " + source + " to " + destination);
+        return true;
     }
 
     public boolean copyDirectory(String sourcePath, String destinationPath) {

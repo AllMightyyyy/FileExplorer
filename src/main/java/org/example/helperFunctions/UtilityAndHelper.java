@@ -70,32 +70,29 @@ public class UtilityAndHelper {
     // Function that returns text content of a text file and provides accurate logging
     public String readTextFileContents(String filePath) {
         Path file = Paths.get(filePath);
-        String content;
         try {
-            content = new String(Files.readAllBytes(file));
+            return new String(Files.readAllBytes(file), StandardCharsets.UTF_8);
         } catch (IOException e) {
-            throw new RuntimeException("Error in method to read text file content -> readTextFileContents ", e);
+            throw new RuntimeException("Error reading file content: " + filePath, e);
         }
-        return content;
     }
 
-    // Function that writes to a file, it takes an argument to know if we should overwrite or append
+    // Function that writes to a file, with an option to overwrite or append
     public boolean writeToFile(String filePath, String data, boolean overwriteOption) {
         Path file = Paths.get(filePath);
-        if (overwriteOption) {
-            try {
-                Files.write(file, data.getBytes(StandardCharsets.UTF_8), APPEND);
-            } catch (IOException e) {
-                throw new RuntimeException("Failed operation to write into the file" , e);
+        try {
+            if (overwriteOption) {
+                Files.write(file, data.getBytes(StandardCharsets.UTF_8), StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.CREATE);
+            } else {
+                Files.write(file, data.getBytes(StandardCharsets.UTF_8), StandardOpenOption.APPEND, StandardOpenOption.CREATE);
             }
-        }   else {
-            try {
-                Files.write(file, data.getBytes(StandardCharsets.UTF_8));
-            } catch (IOException e) {
-                throw new RuntimeException("Failed operation to write into the file" , e);
-            }
+            return true;
+        } catch (IOException e) {
+            String operation = overwriteOption ? "overwriting" : "appending to";
+            throw new RuntimeException("Failed operation while " + operation + " the file: " + filePath, e);
         }
-        return true;
     }
+
+
 
 }
